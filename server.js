@@ -68,7 +68,7 @@ async function adicionarNaPlanilha({ nome, email, phone, metodo, amount, referen
 
   const sheets = google.sheets({ version: 'v4', auth: await auth.getClient() });
 
-  const spreadsheetId = '1cQEOFLQjNkVyI27jHluGnUxlapg0e-9wcPAXxaepZJc'; // substitua pelo ID da sua planilha
+  const spreadsheetId = '1aVQxptqsfoBnLmgury1UdiYlRGBNrwBz7s3-HC9a_bM'; // substitua pelo ID da sua planilha
 
   const dataAtual = new Date().toLocaleString('pt-BR', { timeZone: 'Africa/Maputo' });
 
