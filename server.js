@@ -147,42 +147,54 @@ app.post('/api/pagar', async (req, res) => {
 
     console.log('Resposta da API externa:', response.data);
 
-    // Enviar evento para o Facebook
-    const fbPixelId = process.env.FB_PIXEL_ID;
-    const fbAccessToken = process.env.FB_ACCESS_TOKEN;
-    if (fbPixelId && fbAccessToken && email && phone) {
-      try {
-        await axios.post(
-          
-          `https://graph.facebook.com/v19.0/${fbPixelId}/events?test_event_code=TEST95140`,
-          {
-            data: [
-              {
-                event_name: 'Purchase',
-                event_time: Math.floor(Date.now() / 1000),
-                action_source: 'website',
-                user_data: {
-                  em: sha256(email.trim().toLowerCase()),
-                  ph: sha256(phone.replace(/\D/g, '')),
-                },
-                custom_data: {
-                  currency: 'MZN',
-                  value: amount,
-                },
-              },
-            ],
+    1. Problema: access_token está faltando no corpo
+Mesmo usando Authorization: Bearer, o Zuck exige também o access_token no body (ou na query string).
+
+❌ 2. Problema: test_event_code não pode estar na URL
+O test_event_code deve estar dentro do event, não na URL.
+
+✅ Correção completa
+Segue abaixo o bloco pronto pra colar e testar 🔥:
+
+js
+Copy
+Edit
+const fbPixelId = process.env.FB_PIXEL_ID;
+const fbAccessToken = process.env.FB_ACCESS_TOKEN;
+
+if (fbPixelId && fbAccessToken && email && phone) {
+  try {
+    const payload = {
+      data: [
+        {
+          event_name: 'Purchase',
+          event_time: Math.floor(Date.now() / 1000),
+          action_source: 'website',
+          user_data: {
+            em: sha256(email.trim().toLowerCase()),
+            ph: sha256(phone.replace(/\D/g, '')),
           },
-          {
-            headers: {
-              Authorization: `Bearer ${fbAccessToken}`,
-            },
-          }
-        );
-        console.log('🎯 Evento de purchase enviado para o Facebook');
-      } catch (fbErr) {
-        console.error('❌ Erro ao enviar evento pro Facebook:', fbErr.response?.data || fbErr.message);
-      }
-    }
+          custom_data: {
+            currency: 'MZN',
+            value: amount,
+          },
+          test_event_code: 'TEST95140' // colocar AQUI, não na URL
+        }
+      ],
+      access_token: fbAccessToken // obrigatório no body
+    };
+
+    const response = await axios.post(
+      `https://graph.facebook.com/v19.0/${fbPixelId}/events`,
+      payload
+    );
+
+    console.log('🎯 Evento de purchase enviado pro Facebook com sucesso!');
+  } catch (fbErr) {
+    console.error('❌ Erro ao enviar evento pro Facebook:', fbErr.response?.data || fbErr.message);
+  }
+}
+
 
     // Enviar e-mail se tiver email
     const nomeCliente = nome || 'Cliente';
