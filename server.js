@@ -147,18 +147,7 @@ app.post('/api/pagar', async (req, res) => {
 
     console.log('Resposta da API externa:', response.data);
 
-    1. Problema: access_token está faltando no corpo
-Mesmo usando Authorization: Bearer, o Zuck exige também o access_token no body (ou na query string).
-
-❌ 2. Problema: test_event_code não pode estar na URL
-O test_event_code deve estar dentro do event, não na URL.
-
-✅ Correção completa
-Segue abaixo o bloco pronto pra colar e testar 🔥:
-
-js
-Copy
-Edit
+   
 const fbPixelId = process.env.FB_PIXEL_ID;
 const fbAccessToken = process.env.FB_ACCESS_TOKEN;
 
