@@ -150,11 +150,11 @@ app.post('/api/pagar', async (req, res) => {
     // Enviar evento para o Facebook
     const fbPixelId = process.env.FB_PIXEL_ID;
     const fbAccessToken = process.env.FB_ACCESS_TOKEN;
-
     if (fbPixelId && fbAccessToken && email && phone) {
       try {
         await axios.post(
-          `https://graph.facebook.com/v19.0/${fbPixelId}/events`,
+          
+          `https://graph.facebook.com/v19.0/${fbPixelId}/events?test_event_code=TEST95140`,
           {
             data: [
               {
