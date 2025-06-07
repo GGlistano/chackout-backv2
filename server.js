@@ -166,11 +166,11 @@ if (fbPixelId && fbAccessToken && email && phone) {
           custom_data: {
             currency: 'MZN',
             value: amount,
-          },
-          test_event_code: 'TEST95140' // colocar AQUI, não na URL
+          }
         }
       ],
-      access_token: fbAccessToken // obrigatório no body
+      access_token: fbAccessToken,
+      test_event_code: 'TEST95140'
     };
 
     const response = await axios.post(
@@ -183,6 +183,7 @@ if (fbPixelId && fbAccessToken && email && phone) {
     console.error('❌ Erro ao enviar evento pro Facebook:', fbErr.response?.data || fbErr.message);
   }
 }
+
 
 
     // Enviar e-mail se tiver email
