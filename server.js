@@ -2,8 +2,26 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer'); // já importado
+const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
+const { initializeApp, cert } = require('firebase-admin/app');
+const serviceAccount = {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+};
+
+initializeApp({
+  credential: cert(serviceAccount),
+});
+const { getFirestore } = require('firebase-admin/firestore');
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
@@ -86,11 +104,35 @@ async function adicionarNaPlanilha({ nome, email, phone, metodo, amount, referen
 
   console.log('📊 Dados adicionados na planilha');
 }
+const db = getFirestore();
+
+async function salvarCompra({ nome, email, phone, whatsapp, metodo, amount, reference, utm_source, utm_medium, utm_campaign, utm_term, utm_content }) {
+  const dados = {
+    nome,
+    email,
+    phone,
+    whatsapp: whatsapp || '',
+    metodo,
+    amount,
+    reference,
+    created_at: new Date(),
+    utm: {
+      source: utm_source || '',
+      medium: utm_medium || '',
+      campaign: utm_campaign || '',
+      term: utm_term || '',
+      content: utm_content || '',
+    },
+  };
+
+  const docRef = await db.collection('compras').add(dados);
+  console.log(`✅ Compra salva no Firebase com ID: ${docRef.id}`);
+}
 
 // Rota do pagamento
 app.post('/api/pagar', async (req, res) => {
   const {
-    phone, amount, reference, metodo, email, nome, pedido,
+    phone, amount, reference, metodo, email, nome, pedido, whatsapp,
     utm_source, utm_medium, utm_campaign, utm_term, utm_content
   } = req.body;
 
