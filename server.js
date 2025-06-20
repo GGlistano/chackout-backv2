@@ -125,9 +125,10 @@ async function salvarCompra({ nome, email, phone, whatsapp, metodo, amount, refe
     },
   };
 
-  const docRef = await db.collection('compras').add(dados);
+  const docRef = await db.collection('compras_checkout2').add(dados);
   console.log(`✅ Compra salva no Firebase com ID: ${docRef.id}`);
 }
+
 
 // Rota do pagamento
 app.post('/api/pagar', async (req, res) => {
@@ -260,6 +261,29 @@ if (fbPixelId && fbAccessToken && email && phone) {
 });
     } catch (err) {
       console.error('Erro ao adicionar dados na planilha:', err);
+    }
+    try {
+      await salvarCompra({ nome: nomeCliente, email, phone, metodo, amount, reference, utm_source, utm_medium, utm_campaign, utm_term, utm_content });
+    } catch (err) {
+      console.error('❌ Erro ao salvar no Firebase:', err);
+    }
+    try {
+      const userRef = db.collection('usuarios');
+      const q = await userRef.where('telefone', '==', phone).get();
+
+      if (q.empty) {
+        await userRef.add({
+          nome: nomeCliente,
+          telefone: phone,
+          saldo: 200,
+          dataCadastro: new Date(),
+        });
+        console.log(`📥 Novo usuário salvo em 'usuarios': ${nomeCliente}`);
+      } else {
+        console.log('👀 Usuário já existe na coleção "usuarios"');
+      }
+    } catch (err) {
+      console.error('❌ Erro ao salvar usuário em "usuarios":', err);
     }
     // Enviar WhatsApp via Z-API
     try {
