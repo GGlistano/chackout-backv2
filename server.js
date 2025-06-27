@@ -293,7 +293,7 @@ if (fbPixelId && fbAccessToken && email && phone) {
         ? phone
         : `258${phone.replace(/^0/, '')}`;
 
-      const mensagem = `Olá ${nomeCliente}! 👋\n\nSua transação foi aprovada com sucesso 🛒\n\n📌 Referência: *${reference}*\n💰 Valor: *MZN ${amount}*\n\nAcesse seu produto clicando abaixo:\n👉 https://quiet-youtiao-d2f6f8.netlify.app\n\nSe precisar de ajuda, estamos por aqui!`;
+      const mensagem = `Olá ${nomeCliente}! 👋\n\nSua transação foi aprovada com sucesso 🛒\n\n📌 Referência: *${reference}*\n💰 Valor: *MZN ${amount}*\n\nAcesse seu produto clicando abaixo:\n👉 https://superlative-croquembouche-ef1f1f.netlify.app/\n\nSe precisar de ajuda, estamos por aqui!`;
 
       await axios.post(
   'https://api.z-api.io/instances/3E253C0E919CB028543B1A5333D349DF/token/4909422EC4EB52D5FAFB7AB1/send-text',
