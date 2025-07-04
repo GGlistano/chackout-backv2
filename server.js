@@ -106,6 +106,56 @@ async function adicionarNaPlanilha({ nome, email, phone, metodo, amount, referen
 }
 const db = getFirestore();
 
+// Função de recuperação
+async function enviarMensagemWhatsAppRecuperacao(telefone, nomeCliente = '') {
+  try {
+    const telefoneFormatado = telefone.startsWith('258') ? telefone : `258${telefone.replace(/^0/, '')}`;
+
+    const mensagem = `⚠️ Olá${nomeCliente ? ' ' + nomeCliente : ''}! Parece que houve um erro na sua tentativa de pagamento…
+
+Mas temos uma notícia boa 🤑
+
+Conseguimos liberar um acesso especial: em vez de pagar 197 MZN, você pode acessar tudo por apenas **97 MZN** (por tempo limitado)!
+
+👉 Finalize aqui agora:
+https://SEU-CHECKOUT.com/98
+
+Se tiver dúvidas, é só responder por aqui. Estamos te esperando!`;
+
+    await axios.post(
+      'https://api.z-api.io/instances/3E253C0E7BA3B028DAC01664B40E8DC7/token/557A2D63524922D69AE44772/send-text',
+      {
+        phone: telefoneFormatado,
+        message: mensagem
+      },
+      {
+        headers: {
+          'Client-Token': 'F1850a1deea6b422c9fa8baf8407628c5S'
+        }
+      }
+    );
+
+    console.log('✅ Mensagem de recuperação enviada via WhatsApp');
+  } catch (err) {
+    console.error('❌ Erro ao enviar mensagem de recuperação:', err.response?.data || err.message);
+  }
+}
+// 👇 Função que salva as transações falhadas
+async function salvarTransacaoFalhada({ phone, metodo, reference, erro }) {
+  try {
+    await db.collection("transacoes_falhadas_2").add({
+      phone,
+      metodo,
+      reference,
+      erro,
+      status: "falhou",
+      created_at: new Date(),
+    });
+    console.log(`⚠️ Transação falhada salva: ${erro}`);
+  } catch (err) {
+    console.error("❌ Erro ao salvar transação falhada:", err);
+  }
+}
 async function salvarCompra({ nome, email, phone, whatsapp, metodo, amount, reference, utm_source, utm_medium, utm_campaign, utm_term, utm_content }) {
   const dados = {
     nome,
@@ -314,16 +364,30 @@ if (fbPixelId && fbAccessToken && email && phone) {
       console.error('❌ Erro ao enviar mensagem pelo WhatsApp:', err.response?.data || err.message);
     }
 
-    // Retorno da API
-    res.json({ status: 'ok', data: response.data });
+        res.json({ status: 'ok', data: response.data });
   } catch (err) {
-    console.error('Erro na requisição externa:', err.response?.data || err.message);
-    res.status(500).json({ status: 'error', message: err.response?.data || err.message });
+    const erroDetalhado = err?.response?.data?.message || err.message || "Erro desconhecido";
+
+console.error('Erro na requisição externa:', erroDetalhado);
+
+// Salvar falha no Firestore
+await salvarTransacaoFalhada({
+  phone,
+  metodo,
+  reference,
+  erro: erroDetalhado
+});
+
+// ⏱️ Agenda envio de mensagem de recuperação
+setTimeout(() => {
+  enviarMensagemWhatsAppRecuperacao(phone, nome);
+}, 2 * 60 * 1000);
+
+res.status(500).json({ status: 'error', message: erroDetalhado });
+
   }
 });
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
-
-
