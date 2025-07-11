@@ -264,7 +264,7 @@ if (fbPixelId && fbAccessToken && email && phone) {
         }
       ],
       access_token: fbAccessToken,
-      test_event_code: 'TEST95140'
+      test_event_code: 'TEST14326'
     };
 
     const response = await axios.post(
