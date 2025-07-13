@@ -289,7 +289,7 @@ if (fbPixelId && fbAccessToken && email && phone) {
         <p>Referência: ${reference}. Valor: MZN ${amount}.</p>
         <p>Obrigado pela compra!</p>
         <p>Para acessar o produto, clique no link: 
-        <a href="https://club.membify.com.br/app" target="_blank">Acessar produto</a></p>
+        <a href="https://api.whatsapp.com/send/?phone=258865984978&text=Ol%C3%A1%2C+quero+receber+o+meu+acesso&type=phone_number&app_absent=0" target="_blank">Acessar produto</a></p>
       `;
 
       enviarEmail(email, 'Compra Confirmada!', textoEmailHTML);
