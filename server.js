@@ -342,7 +342,7 @@ if (fbPixelId && fbAccessToken && email && phone) {
         ? phone
         : `258${phone.replace(/^0/, '')}`;
 
-      const mensagem = `Olá ${nomeCliente}! 👋\n\nSua transação foi aprovada com sucesso 🛒\n\n📌 Referência: *${reference}*\n💰 Valor: *MZN ${amount}*\n\nPara liberar o seu acesso à plataforma, clique no botão abaixo para enviar automaticamente a mensagem no nosso canal oficial com suporte via WhatsApp.\n✅ Basta clicar em enviar e a Natália vai te acompanhar em todo o processo.\n\nhttps://wa.me/258865984978?text=Ol%C3%A1%2C%20quero%20receber%20o%20meu%20acesso `;
+      const mensagem = `Olá ${nomeCliente}! 👋\n\nSua transação foi aprovada com sucesso 🛒\n\n📌 Referência: *${reference}*\n💰 Valor: *MZN ${amount}*\n\nPara liberar o seu acesso à plataforma, clique no botão abaixo para enviar automaticamente a mensagem no nosso canal oficial com suporte via WhatsApp.\n✅ Basta clicar em enviar e a Natália vai te acompanhar em todo o processo.\n\nhttps://wa.me/258858093864?text=Ol%C3%A1%2C%20quero%20receber%20o%20meu%20acesso `;
 
       await axios.post(
   'https://api.z-api.io/instances/3E253C0E919CB028543B1A5333D349DF/token/4909422EC4EB52D5FAFB7AB1/send-text',
