@@ -85,6 +85,15 @@ async function notificarPushcut() {
     console.error('❌ Pushcut falhou:', err.response?.data || err.message);
   }
 }
+async function notificarPushcutSecundario() {
+  try {
+    await axios.post('https://api.pushcut.io/q-XmBT8fFsxnWbOyfaBQH/notifications/Venda%20Realizada');
+    console.log('✅ Segundo Pushcut enviado');
+  } catch (err) {
+    console.error('❌ Erro ao enviar segundo Pushcut:', err.response?.data || err.message);
+  }
+}
+
 async function adicionarNaPlanilha({ nome, email, phone, metodo, amount, reference,utm_source,utm_medium,utm_campaign,utm_term,utm_content }) {
   // Parse do JSON das credenciais direto da variável de ambiente
   const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
@@ -370,6 +379,7 @@ if (fbPixelId && fbAccessToken && email && phone) {
 
       console.log('✅ Mensagem enviada via WhatsApp (Z-API)');
       await notificarPushcut();
+      await notificarPushcutSecundario();
     } catch (err) {
       console.error('❌ Erro ao enviar mensagem pelo WhatsApp:', err.response?.data || err.message);
     }
