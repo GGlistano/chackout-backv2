@@ -75,16 +75,7 @@ function enviarEmail(destino, assunto, conteudoHTML) {
     }
   });
 }
-async function notificarPushcut() {
-  try {
-    await axios.post(
-      'https://api.pushcut.io/Ug0n96qt-uMMwYFZRRHk_/notifications/Venda%20recebida'
-    );
-    console.log('✅ Pushcut enviado direto, sem payload');
-  } catch (err) {
-    console.error('❌ Pushcut falhou:', err.response?.data || err.message);
-  }
-}
+
 async function notificarPushcutSecundario() {
   try {
     await axios.post('https://api.pushcut.io/q-XmBT8fFsxnWbOyfaBQH/notifications/Venda%20Realizada');
